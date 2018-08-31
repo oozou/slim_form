@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'active_support/concern'
+require 'active_support/core_ext/class/attribute'
 module SlimForm
   module Resource
     extend ActiveSupport::Concern
@@ -10,19 +11,13 @@ module SlimForm
     end
 
     class_methods do
-      def resource(model)
-        if respond_to?(:resource_name) && resource_name.present?
-          raise ResourceNameAlreadyDefinedError
-        end
-        cattr_accessor :resource_name
-        model_name = model.name.underscore.to_sym
-        self.resource_name = model_name
-        attr_writer(model_name)
-        define_method(model_name) do
-          instance_variable_get("@#{model_name}") ||
-            instance_variable_set("@#{model_name}", model.new)
-        end
-        delegate :id, :persisted?, to: model_name
+      def resource(model, as: model.name.underscore)
+        association_name = as.to_sym
+        class_attribute(
+          :resource_name, instance_accessor: false, default: association_name
+        )
+        dependency(model, as: association_name, allow_in_params: false)
+        delegate :id, :persisted?, to: association_name, allow_nil: true
         define_singleton_method(:model_name) { model.model_name }
       end
     end
