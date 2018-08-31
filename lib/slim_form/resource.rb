@@ -16,7 +16,12 @@ module SlimForm
         class_attribute(
           :resource_name, instance_accessor: false, default: association_name
         )
-        dependency(model, as: association_name, allow_in_params: false)
+        dependency(
+          model,
+          as: association_name,
+          allow_in_params: false,
+          required: false
+        )
         delegate :id, :persisted?, to: association_name, allow_nil: true
         define_singleton_method(:model_name) { model.model_name }
       end
