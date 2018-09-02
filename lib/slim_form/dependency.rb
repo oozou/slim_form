@@ -29,13 +29,14 @@ module SlimForm
           end
           if allow_in_params
             attribute(dependency_name_id, :string)
+            self.validates(dependency_name_id, presence: true) if required
           else
             attr_accessor(dependency_name_id)
+            self.validates(dependency_name, presence: true) if required
           end
         else
           attr_accessor(dependency_name)
         end
-        self.validates(dependency_name, presence: true) if required
       end
     end
   end
