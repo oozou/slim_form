@@ -6,7 +6,7 @@ module SlimForm
 
     def save!
       return false unless valid?
-      ActiveRecord::Base.transaction { persist! }
+      persist!
       true
     rescue => e
       errors.add(:exception, e.message)
