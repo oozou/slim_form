@@ -7,7 +7,6 @@ module SlimForm
     def save!
       return false unless valid?
       persist!
-      true
     rescue => e
       errors.add(:exception, e.message)
       false
