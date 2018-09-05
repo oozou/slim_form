@@ -66,9 +66,10 @@ module SlimForm
         attr_name,
         type = :string,
         default: nil,
-        required: true,
+        required: false,
         unique_for: nil
       )
+        required = false if type == :boolean
         attributes[attr_name.to_sym] = type
         define_attribute_readers(attr_name, type, default)
         define_attribute_writer(attr_name, type)
