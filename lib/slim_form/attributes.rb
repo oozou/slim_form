@@ -48,7 +48,7 @@ module SlimForm
 
       private def _default_value_from_delegate(default_hash, attr_name)
         _method = default_hash[:method] ? default_hash[:method] : attr_name
-        public_send(default_hash[:from], _method)
+        public_send(default_hash[:from]).public_send(_method)
       end
 
       private def sanitize_params(params)
