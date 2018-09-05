@@ -11,6 +11,17 @@ module SlimForm
     included do
       class_attribute :attributes, instance_accessor: false, default: {}
 
+      # simple_form helper
+      def type_for_attribute(attr)
+        type = self.class.attributes[attr.to_sym]
+        ActiveModel::Type.lookup(type)
+      end
+
+      # simple_form helper
+      def has_attribute?(attr)
+        self.class.attributes.has_key?(attr.to_sym)
+      end
+
       def attributes(only: nil, except: nil)
         attributes_hash = self.class.attributes
         attributes_to_map = if only
