@@ -12,7 +12,10 @@ module SlimForm
     include SlimForm::Persistence
     include SlimForm::Resources
 
+    NullParamsError = Class.new(StandardError)
+
     def initialize(params: {}, **resources)
+      raise NullParamsError unless params
       resources.each do |resource_accessor, object|
         public_send("#{resource_accessor}=", object)
       end
