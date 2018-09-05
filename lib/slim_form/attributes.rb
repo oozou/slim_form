@@ -11,8 +11,16 @@ module SlimForm
     included do
       class_attribute :attributes, instance_accessor: false, default: {}
 
-      def attributes
-        attributes_array = self.class.attributes.keys.map do |attribute|
+      def attributes(only: nil, except: nil)
+        attributes_hash = self.class.attributes
+        attributes_to_map = if only
+                              attributes_hash.slice(*Array(only))
+                            elsif except
+                              attributes_hash.except(*Array(except))
+                            else
+                              attributes_hash
+                            end.keys
+        attributes_array = attributes_to_map.map do |attribute|
           [attribute, public_send(attribute)]
         end
         ActiveSupport::HashWithIndifferentAccess[attributes_array]
