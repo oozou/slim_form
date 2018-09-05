@@ -12,6 +12,11 @@ module SlimForm
     end
 
     class_methods do
+      def mock_model_name(class_name, namespace = nil)
+        model_name = ActiveModel::Name.new(nil, nil, class_name)
+        define_method(:model_name) { model_name }
+      end
+
       def primary_resource(
         resource_attr,
         class_name: resource_attr.to_s.classify,
