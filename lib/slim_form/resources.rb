@@ -42,12 +42,13 @@ module SlimForm
         delegates: nil
       )
         resource_attr_sym = resource_attr.to_sym
+        klass = class_name.constantize
         configure_resource_accessors(
-          resource_attr_sym, id_accessor, allow_in_params, required
+          klass, resource_attr_sym, id_accessor, allow_in_params, required
         )
         delegate_to_resource(resource_attr_sym, delegates) if delegates
         self.resources[resource_attr_sym] = :has_one
-        validates(resource_attr_sym, resource_class: class_name.constantize)
+        validates(resource_attr_sym, resource_class: klass)
       end
 
       private def delegate_to_resource(resource_attr, delegates)
@@ -59,6 +60,7 @@ module SlimForm
       end
 
       private def configure_resource_accessors(
+        klass,
         resource_attr,
         id_accessor,
         allow_in_params,
@@ -74,7 +76,7 @@ module SlimForm
           define_method("#{resource_attr}") do
             instance_variable_get(i_resource_attr) ||
               (if public_send(resource_attr_id)
-               model.find(public_send(resource_attr_id))
+                klass.find(public_send(resource_attr_id))
               end)
           end
           if allow_in_params
