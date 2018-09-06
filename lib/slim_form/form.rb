@@ -8,6 +8,7 @@ require 'slim_form/custom_validators'
 module SlimForm
   class Form
     include ActiveModel::Model
+    include ActiveModel::Validations::Callbacks
     include SlimForm::Attributes
     include SlimForm::Persistence
     include SlimForm::Resources
