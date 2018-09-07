@@ -53,7 +53,17 @@ module SlimForm
         )
         delegate_to_resource(resource_attr_sym, delegates) if delegates
         self.resources[resource_attr_sym] = :has_one
-        validates(resource_attr_sym, resource_class: klass)
+        define_method("#{resource_attr}_supplied?") do
+          supplied_resources.include?(resource_attr_sym) ||
+            (if id_accessor && allow_in_params
+              supplied_params.include?("#{resource_attr_sym}_id".to_sym)
+            end)
+        end
+        validates(
+          resource_attr_sym,
+          resource_class: klass,
+          if: "#{resource_attr}_supplied?".to_sym
+        )
       end
 
       private def delegate_to_resource(resource_attr, delegates)
@@ -81,7 +91,9 @@ module SlimForm
           define_method("#{resource_attr}") do
             instance_variable_get(i_resource_attr) ||
               (if public_send(resource_attr_id)
-                klass.find(public_send(resource_attr_id))
+                instance_variable_set(
+                  i_resource_attr, klass.find(public_send(resource_attr_id))
+                )
               end)
           end
           if allow_in_params

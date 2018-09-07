@@ -15,11 +15,15 @@ module SlimForm
 
     NullParamsError = Class.new(StandardError)
 
+    attr_accessor :supplied_resources, :supplied_params
+
     def initialize(params: {}, **resources)
       raise NullParamsError unless params
       resources.each do |resource_accessor, object|
         public_send("#{resource_accessor}=", object)
       end
+      self.supplied_resources = resources.keys.map(&:to_sym)
+      self.supplied_params = params.keys.map(&:to_sym)
       form_attributes = sanitize_params(params)
       super(form_attributes)
     end
