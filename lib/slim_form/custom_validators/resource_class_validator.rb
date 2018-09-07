@@ -8,12 +8,12 @@ class ResourceClassValidator < ActiveModel::EachValidator
     super
   end
 
-  def validate_each(form, attribute, resource)
+  def validate_each(form, attr, resource)
     klass = resource.class
     # This allows submodels to match for STI or other inherited models
     return true if klass <= @form_resource_class
     form.errors.add(
-      attribute, :invalid_class, { resource_class_name: @form_resource_class }
+      attr, :invalid_class, { resource_class_name: @form_resource_class.name }
     )
   end
 end
