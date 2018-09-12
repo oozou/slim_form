@@ -50,15 +50,6 @@ module SlimForm
         _method = default_hash[:method] ? default_hash[:method] : attr_name
         public_send(default_hash[:from]).public_send(_method)
       end
-
-      private def sanitize_params(params)
-        hash = if params.is_a?(ActionController::Parameters)
-                 params.to_unsafe_h
-               else
-                 params
-               end
-        hash.slice(*self.class.attributes.keys)
-      end
     end
 
     class_methods do
