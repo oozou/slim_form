@@ -44,7 +44,7 @@ module SlimForm
                  params
                end
         hash.keep_if do |key, value|
-          self.class.attributes.has_key?(key) && value.present?
+          self.class.attributes.has_key?(key.to_sym) && value.present?
         end
       end
     end
