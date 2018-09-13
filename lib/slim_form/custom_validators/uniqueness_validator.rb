@@ -35,7 +35,7 @@ class UniquenessValidator < ::ActiveRecord::Validations::UniquenessValidator
         raise UnknownPrimaryKey.new(@form_resource_class, "Can not validate uniqueness for persisted record without primary key.")
       end
     end
-    relation = scope_relation(@form_resource, relation)
+    relation = scope_relation(form, @form_resource, relation)
     relation = relation.merge(options[:conditions]) if options[:conditions]
 
     if relation.exists?
@@ -44,5 +44,20 @@ class UniquenessValidator < ::ActiveRecord::Validations::UniquenessValidator
 
       form.errors.add(attribute, :taken, error_options)
     end
+  end
+
+  def scope_relation(form, resource, relation)
+    Array(options[:scope]).each do |scope_item|
+      scope_value =
+        if resource.class._reflect_on_association(scope_item)
+          form.public_send(scope_item) ||
+            resource.association(scope_item).reader
+        else
+          form.public_send(scope_item) || resource._read_attribute(scope_item)
+        end
+      relation = relation.where(scope_item => scope_value)
+    end
+
+    relation
   end
 end
