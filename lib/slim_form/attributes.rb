@@ -53,11 +53,29 @@ module SlimForm
     end
 
     class_methods do
+      def attributes(
+        *attr_names,
+        type: :string,
+        default: nil,
+        required: true,
+        unique_for: nil
+      )
+        attr_names.each do |attr_name|
+          attribute(
+            attr_name,
+            type,
+            default: default,
+            required: required,
+            unique_for: unique_for
+          )
+        end
+      end
+
       def attribute(
         attr_name,
         type = :string,
         default: nil,
-        required: false,
+        required: true,
         unique_for: nil
       )
         required = false if type == :boolean
