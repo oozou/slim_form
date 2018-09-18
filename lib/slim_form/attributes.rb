@@ -9,21 +9,21 @@ module SlimForm
     extend ActiveSupport::Concern
 
     included do
-      class_attribute :attributes, instance_accessor: false, default: {}
+      class_attribute :form_attributes, instance_accessor: false, default: {}
 
       # simple_form helper
       def type_for_attribute(attr)
-        type = self.class.attributes[attr.to_sym]
+        type = self.class.form_attributes[attr.to_sym]
         ActiveModel::Type.lookup(type)
       end
 
       # simple_form helper
       def has_attribute?(attr)
-        self.class.attributes.has_key?(attr.to_sym)
+        self.class.form_attributes.has_key?(attr.to_sym)
       end
 
       def attributes(only: nil, except: nil)
-        attributes_hash = self.class.attributes
+        attributes_hash = self.class.form_attributes
         attributes_to_map = if only
                               attributes_hash.slice(*Array(only))
                             elsif except
@@ -79,7 +79,7 @@ module SlimForm
         unique_for: nil
       )
         required = false if type == :boolean
-        attributes[attr_name.to_sym] = type
+        form_attributes[attr_name.to_sym] = type
         define_attribute_readers(attr_name, type, default)
         define_attribute_writer(attr_name, type)
         define_attribute_validators(attr_name, required, unique_for)

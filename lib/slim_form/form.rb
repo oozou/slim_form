@@ -26,7 +26,7 @@ module SlimForm
         # if user passes params: nil
         raise NullParamsError unless params
         params_hash = hashify(params)
-        self.supplied_params = params_hash
+        self.supplied_params = params_hash.dup
         form_resources = sanitize_resources(params_hash, resources)
         form_resources.each do |resource_accessor, object|
           public_send("#{resource_accessor}=", object)
@@ -49,7 +49,7 @@ module SlimForm
 
       private def sanitize_params(hash)
         hash.keep_if do |key, value|
-          self.class.attributes.has_key?(key.to_sym) && value.present?
+          self.class.form_attributes.has_key?(key.to_sym) && value.present?
         end
       end
 
