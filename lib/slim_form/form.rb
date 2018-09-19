@@ -25,6 +25,7 @@ module SlimForm
       def initialize(params: {}, **resources)
         # if user passes params: nil
         raise NullParamsError unless params
+        initialize_nested_forms
         params_hash = hashify(params)
         self.supplied_params = params_hash.dup
         form_resources = sanitize_resources(params_hash, resources)
@@ -34,6 +35,10 @@ module SlimForm
         self.supplied_resources = form_resources.keys.map(&:to_sym)
         form_attributes = sanitize_params(params_hash)
         super(form_attributes)
+      end
+
+      private def initialize_nested_forms
+        self.nested_forms.each { |attr, klass| attr = klass.new }
       end
 
       private def sanitize_resources(hash, resources)
