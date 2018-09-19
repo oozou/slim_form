@@ -37,6 +37,10 @@ module SlimForm
         ActiveSupport::HashWithIndifferentAccess[attributes_array]
       end
 
+      def blank?
+        attributes.values.compact.blank?
+      end
+
       private def _default_value(dynamic_default, attr_name)
         case dynamic_default
         when Proc then instance_exec(&dynamic_default)
