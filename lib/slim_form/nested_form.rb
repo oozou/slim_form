@@ -30,10 +30,10 @@ module SlimForm
         end
       end
 
-      private def form_should_be_validated?(form, resource_attr)
+      private def form_should_be_validated?(form, attr)
         blank = form.attributes.values.compact.blank?
         not_required =
-          !self.class.required_nested_forms.include?(resource_attr.to_sym)
+          !self.class.required_nested_forms.include?(attr.to_sym)
         return false if blank && not_required
         true
       end
@@ -54,12 +54,12 @@ module SlimForm
 
     class_methods do
       def nested_form(
-        resource_attr,
-        class_name: "#{resource_attr.to_s.classify}Form",
+        attr,
+        class_name: "#{attr.to_s.classify}Form",
         required: true,
         &block
       )
-        nested_forms[resource_attr.to_sym] =
+        nested_forms[attr.to_sym] =
           if block_given?
             Class.new do
               include SlimForm::Form
@@ -71,14 +71,14 @@ module SlimForm
           else
             class_name.constantize
           end
-        configure_nested_form_accessors(resource_attr)
-        required_nested_forms << resource_attr.to_sym if required
+        configure_nested_form_accessors(attr)
+        required_nested_forms << attr.to_sym if required
       end
 
-      private def configure_nested_form_accessors(resource_attr)
-        attr_reader(resource_attr)
-        define_method("#{resource_attr}=") do |*form_or_args|
-          form_class = self.class.nested_forms[resource_attr.to_sym]
+      private def configure_nested_form_accessors(attr)
+        attr_reader(attr)
+        define_method("#{attr}=") do |*form_or_args|
+          form_class = self.class.nested_forms[attr.to_sym]
           form =
             if form_or_args[0].nil?
               form_class.new
@@ -89,7 +89,7 @@ module SlimForm
             else
               form_class.new(params: form_or_args[0])
             end
-          instance_variable_set("@#{resource_attr}", form)
+          instance_variable_set("@#{attr}", form)
         end
       end
     end
