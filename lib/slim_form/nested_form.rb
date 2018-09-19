@@ -71,7 +71,7 @@ module SlimForm
           form_class = self.class.nested_forms[resource_attr.to_sym]
           form =
             if form_or_args[0].nil?
-              nil
+              form_class.new
             elsif form_or_args[0].is_a?(form_class)
               form_or_args[0]
             elsif form_or_args[0][:params]
