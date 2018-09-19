@@ -70,7 +70,9 @@ module SlimForm
         define_method("#{resource_attr}=") do |*form_or_args|
           form_class = self.class.nested_forms[resource_attr.to_sym]
           form =
-            if form_or_args[0].is_a?(form_class)
+            if form_or_args[0].nil?
+              nil
+            elsif form_or_args[0].is_a?(form_class)
               form_or_args[0]
             elsif form_or_args[0][:params]
               form_class.new(form_or_args[0])
