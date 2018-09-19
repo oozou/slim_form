@@ -22,7 +22,7 @@ module SlimForm
       private def validate_required_nested_forms
         self.class.required_nested_forms.map do |resource_attr|
           form = public_send(resource_attr)
-          errors.add(resource_attr, :required) if form.blank?
+          errors.add(resource_attr, :blank) if form.blank?
         end
       end
 
