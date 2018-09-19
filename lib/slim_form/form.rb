@@ -38,7 +38,7 @@ module SlimForm
       end
 
       private def initialize_nested_forms
-        self.nested_forms.each { |attr, klass| attr = klass.new }
+        self.class.nested_forms.each { |attr, klass| attr = klass.new }
       end
 
       private def sanitize_resources(hash, resources)
