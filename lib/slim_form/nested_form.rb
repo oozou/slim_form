@@ -30,7 +30,7 @@ module SlimForm
         end
       end
 
-      private def form_should_be_validated?(form, attr)
+      private def form_should_be_validated?(form, resource_attr)
         blank = form.attributes.values.compact.blank?
         not_required =
           !self.class.required_nested_forms.include?(resource_attr.to_sym)
