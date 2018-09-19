@@ -8,18 +8,28 @@ module SlimForm
 
     included do
       class_attribute :nested_forms, instance_accessor: false, default: {}
+      class_attribute(
+        :required_nested_forms, instance_accessor: false, default: []
+      )
 
       def valid?
         super
+        validate_required_nested_forms
         validate_nested_forms
         errors.blank?
+      end
+
+      private def validate_required_nested_forms
+        self.class.required_nested_forms.map do |resource_attr|
+          form = public_send(resource_attr)
+          errors.add(resource_attr, :required) if form.blank?
+        end
       end
 
       private def validate_nested_forms
         self.class.nested_forms.keys.map do |attr|
           form = public_send(attr)
-          next unless form
-          next if form.valid?
+          next if form.blank? || form.valid?
           form.errors.details.each do |nested_attr, errors_array|
             errors_array.each do |error_hash|
               errors.add(:"#{attr}.#{nested_attr}", error_hash[:error])
@@ -62,7 +72,7 @@ module SlimForm
             class_name.constantize
           end
         configure_nested_form_accessors(resource_attr)
-        validates(resource_attr, presence: true) if required
+        required_nested_forms << resource_attr.to_sym if required
       end
 
       private def configure_nested_form_accessors(resource_attr)
