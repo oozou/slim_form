@@ -14,22 +14,14 @@ module SlimForm
 
       def valid?
         super
-        validate_required_nested_forms
         validate_nested_forms
         errors.blank?
-      end
-
-      private def validate_required_nested_forms
-        self.class.required_nested_forms.map do |resource_attr|
-          form = public_send(resource_attr)
-          errors.add(resource_attr, :blank) if form.blank?
-        end
       end
 
       private def validate_nested_forms
         self.class.nested_forms.keys.map do |attr|
           form = public_send(attr)
-          next if form.blank? && form_not_required?(attr) || form.valid?
+          next if form_should_be_validated?(form, attr) || form.valid?
           form.errors.details.each do |nested_attr, errors_array|
             errors_array.each do |error_hash|
               errors.add(:"#{attr}.#{nested_attr}", error_hash[:error])
@@ -38,8 +30,12 @@ module SlimForm
         end
       end
 
-      private def form_not_required?(resource_attr)
-        !self.class.required_nested_forms.include?(resource_attr.to_sym)
+      private def form_should_be_validated?(form, attr)
+        blank = form.attributes.values.compact.blank?
+        not_required =
+          !self.class.required_nested_forms.include?(resource_attr.to_sym)
+        return false if blank && not_required
+        true
       end
 
       def read_attribute_for_validation(attribute)
