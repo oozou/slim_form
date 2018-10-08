@@ -2,14 +2,10 @@
 
 module SlimForm
   module Persistence
-    attr_accessor :exception
 
     def save!
       return false unless valid?
-      persist!
-    rescue => e
-      errors.add(:exception, e.message)
-      false
+      ActiveRecord::Base.transaction { persist! }
     end
   end
 end
